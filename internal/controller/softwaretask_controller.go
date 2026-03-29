@@ -42,8 +42,8 @@ import (
 )
 
 const (
-	pollInterval      = 15 * time.Second
-	anthropicAPIKey   = "ANTHROPIC_API_KEY"
+	pollInterval    = 15 * time.Second
+	anthropicAPIKey = "ANTHROPIC_API_KEY"
 )
 
 // SoftwareTaskReconciler reconciles a SoftwareTask object.
@@ -476,7 +476,7 @@ func (r *SoftwareTaskReconciler) resolveMCPServers(ctx context.Context, namespac
 
 // collectMCPServers gathers MCP server definitions from all skills.
 func collectMCPServers(skills []factoryv1alpha1.Skill) []factoryv1alpha1.MCPServer {
-	all := make([]factoryv1alpha1.MCPServer, 0)
+	all := make([]factoryv1alpha1.MCPServer, 0, len(skills))
 	for _, skill := range skills {
 		all = append(all, skill.Spec.MCPServers...)
 	}

@@ -198,12 +198,12 @@ func TestCreateTask_WrongMethod(t *testing.T) {
 
 // --- GitHubWebhook tests ---
 
-func makeGitHubPayload(action, label string, issueNum int) string {
+func makeGitHubPayload(action, label string) string {
 	p := GitHubWebhookPayload{
 		Action: action,
 	}
 	p.Label.Name = label
-	p.Issue.Number = issueNum
+	p.Issue.Number = 42
 	p.Issue.Title = "Test issue"
 	p.Issue.Body = "Test body"
 	p.Repository.FullName = "test/repo"
@@ -221,7 +221,7 @@ func computeSignature(body, secret string) string {
 
 func TestGitHubWebhook_ValidLabeledEvent(t *testing.T) {
 	h := newTestHandler()
-	body := makeGitHubPayload("labeled", "factory:do", 42)
+	body := makeGitHubPayload("labeled", "factory:do")
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/github", strings.NewReader(body))
 	w := httptest.NewRecorder()
 
@@ -245,7 +245,7 @@ func TestGitHubWebhook_ValidLabeledEvent(t *testing.T) {
 
 func TestGitHubWebhook_WrongAction(t *testing.T) {
 	h := newTestHandler()
-	body := makeGitHubPayload("opened", "factory:do", 42)
+	body := makeGitHubPayload("opened", "factory:do")
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/github", strings.NewReader(body))
 	w := httptest.NewRecorder()
 
@@ -261,7 +261,7 @@ func TestGitHubWebhook_WrongAction(t *testing.T) {
 
 func TestGitHubWebhook_WrongLabel(t *testing.T) {
 	h := newTestHandler()
-	body := makeGitHubPayload("labeled", "bug", 42)
+	body := makeGitHubPayload("labeled", "bug")
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/github", strings.NewReader(body))
 	w := httptest.NewRecorder()
 
@@ -300,7 +300,7 @@ func TestGitHubWebhook_ValidSignature(t *testing.T) {
 	t.Setenv("GITHUB_WEBHOOK_SECRET", "test-secret")
 
 	h := newTestHandler()
-	body := makeGitHubPayload("labeled", "factory:do", 42)
+	body := makeGitHubPayload("labeled", "factory:do")
 	sig := computeSignature(body, "test-secret")
 
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/github", strings.NewReader(body))
@@ -318,7 +318,7 @@ func TestGitHubWebhook_InvalidSignature(t *testing.T) {
 	t.Setenv("GITHUB_WEBHOOK_SECRET", "test-secret")
 
 	h := newTestHandler()
-	body := makeGitHubPayload("labeled", "factory:do", 42)
+	body := makeGitHubPayload("labeled", "factory:do")
 
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/github", strings.NewReader(body))
 	req.Header.Set("X-Hub-Signature-256", "sha256=invalid")
@@ -335,7 +335,7 @@ func TestGitHubWebhook_MissingSignatureWhenSecretSet(t *testing.T) {
 	t.Setenv("GITHUB_WEBHOOK_SECRET", "test-secret")
 
 	h := newTestHandler()
-	body := makeGitHubPayload("labeled", "factory:do", 42)
+	body := makeGitHubPayload("labeled", "factory:do")
 
 	req := httptest.NewRequest(http.MethodPost, "/webhooks/github", strings.NewReader(body))
 	// No signature header

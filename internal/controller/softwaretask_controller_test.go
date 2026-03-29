@@ -50,7 +50,7 @@ func newReconciler() *SoftwareTaskReconciler {
 
 func int32Ptr(i int32) *int32 { return &i }
 
-func createTask(ctx context.Context, name, secretRef string) *factoryv1alpha1.SoftwareTask {
+func createTask(ctx context.Context, name, secretRef string) {
 	task := &factoryv1alpha1.SoftwareTask{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -67,7 +67,6 @@ func createTask(ctx context.Context, name, secretRef string) *factoryv1alpha1.So
 		},
 	}
 	ExpectWithOffset(1, k8sClient.Create(ctx, task)).To(Succeed())
-	return task
 }
 
 func reconcileTask(ctx context.Context, name string) (reconcile.Result, error) {
@@ -169,7 +168,7 @@ var _ = Describe("SoftwareTask Controller", func() {
 		})
 
 		It("should transition to Completed with PR URL", func() {
-			task := createTask(ctx, taskName, "test-creds")
+			createTask(ctx, taskName, "test-creds")
 
 			// First reconcile: Pending -> Running
 			_, err := reconcileTask(ctx, taskName)
@@ -202,7 +201,7 @@ var _ = Describe("SoftwareTask Controller", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result.RequeueAfter).To(BeZero())
 
-			_ = task
+
 			updatedTask := &factoryv1alpha1.SoftwareTask{}
 			Expect(k8sClient.Get(ctx, types.NamespacedName{Name: taskName, Namespace: namespace}, updatedTask)).To(Succeed())
 			Expect(updatedTask.Status.Phase).To(Equal(factoryv1alpha1.TaskPhaseCompleted))
@@ -311,7 +310,7 @@ var _ = Describe("SoftwareTask Controller", func() {
 		})
 
 		It("should transition to Failed with timeout message", func() {
-			task := createTask(ctx, taskName, "test-creds")
+			createTask(ctx, taskName, "test-creds")
 
 			// Pending -> Running
 			_, err := reconcileTask(ctx, taskName)
@@ -324,7 +323,7 @@ var _ = Describe("SoftwareTask Controller", func() {
 			updatedTask.Status.StartTime = &pastTime
 			Expect(k8sClient.Status().Update(ctx, updatedTask)).To(Succeed())
 
-			_ = task
+
 			// Running -> Failed (timeout)
 			result, err := reconcileTask(ctx, taskName)
 			Expect(err).NotTo(HaveOccurred())
@@ -483,10 +482,10 @@ var _ = Describe("SoftwareTask Controller", func() {
 		})
 
 		It("should be a no-op", func() {
-			task := createTask(ctx, taskName, "test-creds")
+			createTask(ctx, taskName, "test-creds")
 
 			// Manually set to Completed
-			_ = task
+
 			updatedTask := &factoryv1alpha1.SoftwareTask{}
 			Expect(k8sClient.Get(ctx, types.NamespacedName{Name: taskName, Namespace: namespace}, updatedTask)).To(Succeed())
 			updatedTask.Status.Phase = factoryv1alpha1.TaskPhaseCompleted
@@ -503,7 +502,6 @@ var _ = Describe("SoftwareTask Controller", func() {
 			result, err := reconcileTask(ctx, "nonexistent-task")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result.RequeueAfter).To(BeZero())
-			Expect(result.Requeue).To(BeFalse())
 		})
 	})
 })
