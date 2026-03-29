@@ -201,7 +201,6 @@ var _ = Describe("SoftwareTask Controller", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result.RequeueAfter).To(BeZero())
 
-
 			updatedTask := &factoryv1alpha1.SoftwareTask{}
 			Expect(k8sClient.Get(ctx, types.NamespacedName{Name: taskName, Namespace: namespace}, updatedTask)).To(Succeed())
 			Expect(updatedTask.Status.Phase).To(Equal(factoryv1alpha1.TaskPhaseCompleted))
@@ -322,7 +321,6 @@ var _ = Describe("SoftwareTask Controller", func() {
 			pastTime := metav1.NewTime(time.Now().Add(-31 * time.Minute))
 			updatedTask.Status.StartTime = &pastTime
 			Expect(k8sClient.Status().Update(ctx, updatedTask)).To(Succeed())
-
 
 			// Running -> Failed (timeout)
 			result, err := reconcileTask(ctx, taskName)
