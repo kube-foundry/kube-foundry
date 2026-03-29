@@ -66,7 +66,7 @@ var _ = Describe("Manager", Ordered, func() {
 			"kube-foundry-controller-manager",
 			"-n", namespace,
 			"--type=json",
-			"-p", fmt.Sprintf(`[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--agent-image=%s"}]`, mockAgentImage))
+			"-p", fmt.Sprintf(`[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--agent-image-claude-code=%s"},{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--agent-image-codex=%s"},{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--agent-image-open-code=%s"}]`, mockAgentImage, mockAgentImage, mockAgentImage))
 		_, err = utils.Run(cmd)
 		Expect(err).NotTo(HaveOccurred(), "Failed to patch manager deployment with mock agent image")
 
