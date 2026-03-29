@@ -1,0 +1,76 @@
+# -- Operator configuration
+operator:
+  image:
+    repository: ghcr.io/kube-foundry/kube-foundry/operator
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# -- Webhook server configuration
+webhook:
+  enabled: true
+  image:
+    repository: ghcr.io/kube-foundry/kube-foundry/webhook
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 8080
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# -- Agent configuration
+agent:
+  claudeCode:
+    image:
+      repository: ghcr.io/kube-foundry/kube-foundry/agent-claude-code
+      tag: latest
+      pullPolicy: IfNotPresent
+  codex:
+    image:
+      repository: ghcr.io/kube-foundry/kube-foundry/agent-codex
+      tag: latest
+      pullPolicy: IfNotPresent
+  openCode:
+    image:
+      repository: ghcr.io/kube-foundry/kube-foundry/agent-open-code
+      tag: latest
+      pullPolicy: IfNotPresent
+
+# -- Sandbox defaults (can be overridden per-task in CRD spec)
+sandbox:
+  defaultCPU: "2"
+  defaultMemory: "4Gi"
+  defaultTimeoutMinutes: 30
+
+# -- Credentials
+credentials:
+  secretName: factory-creds
+
+# -- Network policy
+networkPolicy:
+  enabled: true
+  allowedEgress:
+    # GitHub
+    - cidr: 140.82.112.0/20
+    - cidr: 143.55.64.0/20
+    - cidr: 192.30.252.0/22
+    # Anthropic API
+    - cidr: 104.18.0.0/16
+
+# -- Namespace to deploy into
+namespace: default

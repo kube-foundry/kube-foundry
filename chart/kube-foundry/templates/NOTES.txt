@@ -1,0 +1,38 @@
+Kube Foundry has been installed!
+
+1. Create your credentials secret:
+
+   kubectl create secret generic {{ .Values.credentials.secretName }} \
+     --from-literal=ANTHROPIC_API_KEY=sk-ant-... \
+     --from-literal=GITHUB_TOKEN=ghp_...
+
+2. Submit a task:
+
+   kubectl apply -f - <<EOF
+   apiVersion: factory.factory.io/v1alpha1
+   kind: SoftwareTask
+   metadata:
+     name: my-first-task
+   spec:
+     repo: https://github.com/your-org/your-repo
+     branch: main
+     task: "Your task description here"
+     credentials:
+       secretRef: {{ .Values.credentials.secretName }}
+   EOF
+
+3. Watch your task:
+
+   kubectl get st -w
+   kubectl logs -f pod/my-first-task-sandbox
+
+4. A PR will appear on your repo when the task completes!
+
+{{- if .Values.webhook.enabled }}
+
+Webhook server is available at:
+  http://{{ include "kube-foundry.fullname" . }}-webhook.{{ .Values.namespace }}.svc:{{ .Values.webhook.service.port }}
+
+  POST /api/v1/tasks - Create a task via REST API
+  POST /webhooks/github - GitHub webhook (trigger with "factory:do" label)
+{{- end }}

@@ -1,0 +1,38 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kube-foundry.fullname" . }}-sandbox-egress
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kube-foundry.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: sandbox
+      app.kubernetes.io/managed-by: kube-foundry-operator
+  policyTypes:
+    - Egress
+    - Ingress
+  ingress: []
+  egress:
+    # DNS resolution
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # HTTPS to allowed services
+    - to:
+        {{- range .Values.networkPolicy.allowedEgress }}
+        - ipBlock:
+            cidr: {{ .cidr }}
+        {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 22
+          protocol: TCP
+{{- end }}

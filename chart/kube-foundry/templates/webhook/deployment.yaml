@@ -1,0 +1,50 @@
+{{- if .Values.webhook.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kube-foundry.fullname" . }}-webhook
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kube-foundry.labels" . | nindent 4 }}
+    app.kubernetes.io/component: webhook
+spec:
+  replicas: {{ .Values.webhook.replicas }}
+  selector:
+    matchLabels:
+      {{- include "kube-foundry.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: webhook
+  template:
+    metadata:
+      labels:
+        {{- include "kube-foundry.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: webhook
+    spec:
+      serviceAccountName: {{ include "kube-foundry.fullname" . }}-webhook
+      containers:
+        - name: webhook
+          image: "{{ .Values.webhook.image.repository }}:{{ .Values.webhook.image.tag }}"
+          imagePullPolicy: {{ .Values.webhook.image.pullPolicy }}
+          env:
+            - name: NAMESPACE
+              value: {{ .Values.namespace }}
+            - name: PORT
+              value: {{ .Values.webhook.port | quote }}
+          ports:
+            - containerPort: {{ .Values.webhook.port }}
+              name: http
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.webhook.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+{{- end }}

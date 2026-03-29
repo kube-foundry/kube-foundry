@@ -1,0 +1,16 @@
+apiVersion: factory.factory.io/v1alpha1
+kind: SoftwareTask
+metadata:
+  name: refactor-auth
+spec:
+  repo: https://github.com/example/my-app
+  branch: main
+  task: "Refactor the authentication module to use JWT tokens instead of session cookies"
+  agent: claude-code
+  credentials:
+    secretRef: factory-creds
+  resources:
+    cpu: "4"
+    memory: "8Gi"
+    timeoutMinutes: 60
+  maxRetries: 2

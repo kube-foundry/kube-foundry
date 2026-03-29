@@ -1,0 +1,15 @@
+apiVersion: v2
+name: kube-foundry
+description: Kubernetes-native AI software engineering factory
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - ai
+  - automation
+  - claude
+  - kubernetes
+  - operator
+maintainers:
+  - name: kube-foundry
+    url: https://github.com/kube-foundry

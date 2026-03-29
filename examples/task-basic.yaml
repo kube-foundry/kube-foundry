@@ -1,0 +1,11 @@
+apiVersion: factory.factory.io/v1alpha1
+kind: SoftwareTask
+metadata:
+  name: add-login-page
+spec:
+  repo: https://github.com/example/my-app
+  branch: main
+  task: "Add a new features section to the homepage"
+  agent: claude-code
+  credentials:
+    secretRef: factory-creds

@@ -1,0 +1,20 @@
+{{- if .Values.webhook.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kube-foundry.fullname" . }}-webhook
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kube-foundry.labels" . | nindent 4 }}
+    app.kubernetes.io/component: webhook
+spec:
+  type: {{ .Values.webhook.service.type }}
+  ports:
+    - port: {{ .Values.webhook.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "kube-foundry.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: webhook
+{{- end }}

@@ -1,0 +1,51 @@
+apiVersion: factory.factory.io/v1alpha1
+kind: Skill
+metadata:
+  name: go-expert
+  labels:
+    app.kubernetes.io/name: kube-foundry
+spec:
+  description: "Go development best practices and project setup"
+  files:
+    - path: CLAUDE.md
+      content: |
+        You are an expert Go developer. Follow these conventions:
+        - Use Go 1.25+ idioms
+        - Always run `go vet ./...` and `golangci-lint run` before committing
+        - Write table-driven tests
+        - Use structured logging with slog
+        - Handle errors explicitly, never ignore them
+    - path: .golangci.yml
+      content: |
+        linters:
+          enable:
+            - govet
+            - errcheck
+            - staticcheck
+            - gosimple
+            - unused
+  env:
+    - name: GOFLAGS
+      value: "-count=1"
+  init:
+    - "go mod download"
+  # MCP servers provide tools to the agent via the Model Context Protocol.
+  # mcpServers:
+  #   # Remote: connect to an existing MCP server via URL
+  #   - name: internal-tools
+  #     url: https://mcp.internal.company.com/sse
+  #     headers:
+  #       - name: Authorization
+  #         valueFrom:
+  #           name: mcp-creds
+  #           key: auth-header
+  #   # stdio: agent spawns the MCP server as a subprocess
+  #   - name: github
+  #     command: npx
+  #     args: ["-y", "@modelcontextprotocol/server-github"]
+  #     env:
+  #       - name: GITHUB_PERSONAL_ACCESS_TOKEN
+  #         valueFrom:
+  #           secretKeyRef:
+  #             name: mcp-creds
+  #             key: github-pat

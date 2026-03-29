@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kube-foundry.fullname" . }}-operator
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kube-foundry.labels" . | nindent 4 }}
+    app.kubernetes.io/component: operator
+spec:
+  replicas: {{ .Values.operator.replicas }}
+  selector:
+    matchLabels:
+      {{- include "kube-foundry.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: operator
+  template:
+    metadata:
+      labels:
+        {{- include "kube-foundry.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: operator
+    spec:
+      serviceAccountName: {{ include "kube-foundry.fullname" . }}-operator
+      containers:
+        - name: manager
+          image: "{{ .Values.operator.image.repository }}:{{ .Values.operator.image.tag }}"
+          imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
+          args:
+            - --leader-elect
+            - --agent-image-claude-code={{ .Values.agent.claudeCode.image.repository }}:{{ .Values.agent.claudeCode.image.tag }}
+            - --agent-image-codex={{ .Values.agent.codex.image.repository }}:{{ .Values.agent.codex.image.tag }}
+            - --agent-image-open-code={{ .Values.agent.openCode.image.repository }}:{{ .Values.agent.openCode.image.tag }}
+            - --default-cpu={{ .Values.sandbox.defaultCPU }}
+            - --default-memory={{ .Values.sandbox.defaultMemory }}
+            - --default-timeout={{ .Values.sandbox.defaultTimeoutMinutes }}
+            - --health-probe-bind-address=:8081
+          ports:
+            - containerPort: 8081
+              name: health
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.operator.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10

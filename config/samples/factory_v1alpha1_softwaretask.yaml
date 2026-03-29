@@ -1,0 +1,16 @@
+apiVersion: factory.factory.io/v1alpha1
+kind: SoftwareTask
+metadata:
+  labels:
+    app.kubernetes.io/name: kube-foundry
+    app.kubernetes.io/managed-by: kustomize
+  name: softwaretask-sample
+spec:
+  repo: https://github.com/example/myapp
+  task: "Add unit tests for the auth package"
+  agent: claude-code
+  credentials:
+    secretRef: factory-creds
+  # Optional: load skills into the agent
+  # skills:
+  #   - go-expert

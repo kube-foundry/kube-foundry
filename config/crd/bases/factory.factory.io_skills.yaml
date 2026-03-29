@@ -1,0 +1,531 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.20.1
+  name: skills.factory.factory.io
+spec:
+  group: factory.factory.io
+  names:
+    kind: Skill
+    listKind: SkillList
+    plural: skills
+    shortNames:
+    - sk
+    singular: skill
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.description
+      name: Description
+      type: string
+    - jsonPath: .spec.files
+      name: Files
+      priority: 1
+      type: integer
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: |-
+          Skill is the Schema for the skills API.
+          A Skill defines reusable configuration (files, env vars, init commands)
+          that can be loaded into agent sandbox pods.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: SkillSpec defines the desired state of Skill.
+            properties:
+              description:
+                description: description is a human-readable summary of what this
+                  skill provides.
+                type: string
+              env:
+                description: env defines additional environment variables passed to
+                  the agent container.
+                items:
+                  description: EnvVar represents an environment variable present in
+                    a Container.
+                  properties:
+                    name:
+                      description: |-
+                        Name of the environment variable.
+                        May consist of any printable ASCII characters except '='.
+                      type: string
+                    value:
+                      description: |-
+                        Variable references $(VAR_NAME) are expanded
+                        using the previously defined environment variables in the container and
+                        any service environment variables. If a variable cannot be resolved,
+                        the reference in the input string will be unchanged. Double $$ are reduced
+                        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
+                        "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
+                        Escaped references will never be expanded, regardless of whether the variable
+                        exists or not.
+                        Defaults to "".
+                      type: string
+                    valueFrom:
+                      description: Source for the environment variable's value. Cannot
+                        be used if value is not empty.
+                      properties:
+                        configMapKeyRef:
+                          description: Selects a key of a ConfigMap.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              default: ""
+                              description: |-
+                                Name of the referent.
+                                This field is effectively required, but due to backwards compatibility is
+                                allowed to be empty. Instances of this type with an empty value here are
+                                almost certainly wrong.
+                                More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                              type: string
+                            optional:
+                              description: Specify whether the ConfigMap or its key
+                                must be defined
+                              type: boolean
+                          required:
+                          - key
+                          type: object
+                          x-kubernetes-map-type: atomic
+                        fieldRef:
+                          description: |-
+                            Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
+                            spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
+                          properties:
+                            apiVersion:
+                              description: Version of the schema the FieldPath is
+                                written in terms of, defaults to "v1".
+                              type: string
+                            fieldPath:
+                              description: Path of the field to select in the specified
+                                API version.
+                              type: string
+                          required:
+                          - fieldPath
+                          type: object
+                          x-kubernetes-map-type: atomic
+                        fileKeyRef:
+                          description: |-
+                            FileKeyRef selects a key of the env file.
+                            Requires the EnvFiles feature gate to be enabled.
+                          properties:
+                            key:
+                              description: |-
+                                The key within the env file. An invalid key will prevent the pod from starting.
+                                The keys defined within a source may consist of any printable ASCII characters except '='.
+                                During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+                              type: string
+                            optional:
+                              default: false
+                              description: |-
+                                Specify whether the file or its key must be defined. If the file or key
+                                does not exist, then the env var is not published.
+                                If optional is set to true and the specified key does not exist,
+                                the environment variable will not be set in the Pod's containers.
+
+                                If optional is set to false and the specified key does not exist,
+                                an error will be returned during Pod creation.
+                              type: boolean
+                            path:
+                              description: |-
+                                The path within the volume from which to select the file.
+                                Must be relative and may not contain the '..' path or start with '..'.
+                              type: string
+                            volumeName:
+                              description: The name of the volume mount containing
+                                the env file.
+                              type: string
+                          required:
+                          - key
+                          - path
+                          - volumeName
+                          type: object
+                          x-kubernetes-map-type: atomic
+                        resourceFieldRef:
+                          description: |-
+                            Selects a resource of the container: only resources limits and requests
+                            (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
+                          properties:
+                            containerName:
+                              description: 'Container name: required for volumes,
+                                optional for env vars'
+                              type: string
+                            divisor:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              description: Specifies the output format of the exposed
+                                resources, defaults to "1"
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            resource:
+                              description: 'Required: resource to select'
+                              type: string
+                          required:
+                          - resource
+                          type: object
+                          x-kubernetes-map-type: atomic
+                        secretKeyRef:
+                          description: Selects a key of a secret in the pod's namespace
+                          properties:
+                            key:
+                              description: The key of the secret to select from.  Must
+                                be a valid secret key.
+                              type: string
+                            name:
+                              default: ""
+                              description: |-
+                                Name of the referent.
+                                This field is effectively required, but due to backwards compatibility is
+                                allowed to be empty. Instances of this type with an empty value here are
+                                almost certainly wrong.
+                                More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                              type: string
+                            optional:
+                              description: Specify whether the Secret or its key must
+                                be defined
+                              type: boolean
+                          required:
+                          - key
+                          type: object
+                          x-kubernetes-map-type: atomic
+                      type: object
+                  required:
+                  - name
+                  type: object
+                type: array
+              files:
+                description: files are injected into the agent workspace before the
+                  agent starts.
+                items:
+                  description: SkillFile defines a file to inject into the agent workspace.
+                  properties:
+                    configMapRef:
+                      description: |-
+                        configMapRef references a key in a ConfigMap for the file content.
+                        Mutually exclusive with content.
+                      properties:
+                        key:
+                          description: key is the key within the ConfigMap.
+                          type: string
+                        name:
+                          description: name is the ConfigMap name.
+                          type: string
+                      required:
+                      - key
+                      - name
+                      type: object
+                    content:
+                      description: content is the inline file content. Mutually exclusive
+                        with configMapRef.
+                      type: string
+                    path:
+                      description: path is the relative path within the workspace
+                        where the file will be written.
+                      minLength: 1
+                      type: string
+                  required:
+                  - path
+                  type: object
+                type: array
+              init:
+                description: init contains shell commands executed in the workspace
+                  after clone but before the agent runs.
+                items:
+                  type: string
+                type: array
+              mcpServers:
+                description: |-
+                  mcpServers defines MCP servers made available to the agent.
+                  Supports remote (url) and stdio (command) transports.
+                items:
+                  description: |-
+                    MCPServer defines an MCP server to connect to the agent.
+                    The transport is inferred from the fields set:
+                      - url → remote (streamable HTTP or SSE)
+                      - command → stdio (agent spawns the process)
+                  properties:
+                    args:
+                      description: |-
+                        args are arguments passed to the command.
+                        Only used when command is set.
+                      items:
+                        type: string
+                      type: array
+                    command:
+                      description: |-
+                        command is the program to spawn for a stdio-based MCP server.
+                        Mutually exclusive with url.
+                      type: string
+                    env:
+                      description: |-
+                        env are environment variables set for the MCP server process (stdio)
+                        or sent as context to a remote server.
+                      items:
+                        description: EnvVar represents an environment variable present
+                          in a Container.
+                        properties:
+                          name:
+                            description: |-
+                              Name of the environment variable.
+                              May consist of any printable ASCII characters except '='.
+                            type: string
+                          value:
+                            description: |-
+                              Variable references $(VAR_NAME) are expanded
+                              using the previously defined environment variables in the container and
+                              any service environment variables. If a variable cannot be resolved,
+                              the reference in the input string will be unchanged. Double $$ are reduced
+                              to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
+                              "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
+                              Escaped references will never be expanded, regardless of whether the variable
+                              exists or not.
+                              Defaults to "".
+                            type: string
+                          valueFrom:
+                            description: Source for the environment variable's value.
+                              Cannot be used if value is not empty.
+                            properties:
+                              configMapKeyRef:
+                                description: Selects a key of a ConfigMap.
+                                properties:
+                                  key:
+                                    description: The key to select.
+                                    type: string
+                                  name:
+                                    default: ""
+                                    description: |-
+                                      Name of the referent.
+                                      This field is effectively required, but due to backwards compatibility is
+                                      allowed to be empty. Instances of this type with an empty value here are
+                                      almost certainly wrong.
+                                      More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    type: string
+                                  optional:
+                                    description: Specify whether the ConfigMap or
+                                      its key must be defined
+                                    type: boolean
+                                required:
+                                - key
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              fieldRef:
+                                description: |-
+                                  Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
+                                  spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
+                                properties:
+                                  apiVersion:
+                                    description: Version of the schema the FieldPath
+                                      is written in terms of, defaults to "v1".
+                                    type: string
+                                  fieldPath:
+                                    description: Path of the field to select in the
+                                      specified API version.
+                                    type: string
+                                required:
+                                - fieldPath
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              fileKeyRef:
+                                description: |-
+                                  FileKeyRef selects a key of the env file.
+                                  Requires the EnvFiles feature gate to be enabled.
+                                properties:
+                                  key:
+                                    description: |-
+                                      The key within the env file. An invalid key will prevent the pod from starting.
+                                      The keys defined within a source may consist of any printable ASCII characters except '='.
+                                      During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+                                    type: string
+                                  optional:
+                                    default: false
+                                    description: |-
+                                      Specify whether the file or its key must be defined. If the file or key
+                                      does not exist, then the env var is not published.
+                                      If optional is set to true and the specified key does not exist,
+                                      the environment variable will not be set in the Pod's containers.
+
+                                      If optional is set to false and the specified key does not exist,
+                                      an error will be returned during Pod creation.
+                                    type: boolean
+                                  path:
+                                    description: |-
+                                      The path within the volume from which to select the file.
+                                      Must be relative and may not contain the '..' path or start with '..'.
+                                    type: string
+                                  volumeName:
+                                    description: The name of the volume mount containing
+                                      the env file.
+                                    type: string
+                                required:
+                                - key
+                                - path
+                                - volumeName
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              resourceFieldRef:
+                                description: |-
+                                  Selects a resource of the container: only resources limits and requests
+                                  (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
+                                properties:
+                                  containerName:
+                                    description: 'Container name: required for volumes,
+                                      optional for env vars'
+                                    type: string
+                                  divisor:
+                                    anyOf:
+                                    - type: integer
+                                    - type: string
+                                    description: Specifies the output format of the
+                                      exposed resources, defaults to "1"
+                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                    x-kubernetes-int-or-string: true
+                                  resource:
+                                    description: 'Required: resource to select'
+                                    type: string
+                                required:
+                                - resource
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              secretKeyRef:
+                                description: Selects a key of a secret in the pod's
+                                  namespace
+                                properties:
+                                  key:
+                                    description: The key of the secret to select from.  Must
+                                      be a valid secret key.
+                                    type: string
+                                  name:
+                                    default: ""
+                                    description: |-
+                                      Name of the referent.
+                                      This field is effectively required, but due to backwards compatibility is
+                                      allowed to be empty. Instances of this type with an empty value here are
+                                      almost certainly wrong.
+                                      More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    type: string
+                                  optional:
+                                    description: Specify whether the Secret or its
+                                      key must be defined
+                                    type: boolean
+                                required:
+                                - key
+                                type: object
+                                x-kubernetes-map-type: atomic
+                            type: object
+                        required:
+                        - name
+                        type: object
+                      type: array
+                    headers:
+                      description: |-
+                        headers are HTTP headers sent with requests to a remote MCP server.
+                        Only used when url is set.
+                      items:
+                        description: MCPHeader defines an HTTP header for remote MCP
+                          server connections.
+                        properties:
+                          name:
+                            description: name is the header name (e.g., "Authorization").
+                            type: string
+                          value:
+                            description: value is the header value. Mutually exclusive
+                              with valueFrom.
+                            type: string
+                          valueFrom:
+                            description: |-
+                              valueFrom references a secret key for the header value.
+                              Mutually exclusive with value.
+                            properties:
+                              key:
+                                description: The key of the secret to select from.  Must
+                                  be a valid secret key.
+                                type: string
+                              name:
+                                default: ""
+                                description: |-
+                                  Name of the referent.
+                                  This field is effectively required, but due to backwards compatibility is
+                                  allowed to be empty. Instances of this type with an empty value here are
+                                  almost certainly wrong.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                type: string
+                              optional:
+                                description: Specify whether the Secret or its key
+                                  must be defined
+                                type: boolean
+                            required:
+                            - key
+                            type: object
+                            x-kubernetes-map-type: atomic
+                        required:
+                        - name
+                        type: object
+                      type: array
+                    name:
+                      description: name is the identifier for this MCP server.
+                      minLength: 1
+                      type: string
+                    url:
+                      description: |-
+                        url is the endpoint for a remote MCP server (streamable HTTP or SSE).
+                        Mutually exclusive with command.
+                      type: string
+                  required:
+                  - name
+                  type: object
+                type: array
+              prompts:
+                description: |-
+                  prompts are markdown instructions loaded into the agent's context as .claude/skills/{name}.md files.
+                  This is the primary skill content — it tells the agent how to behave.
+                items:
+                  description: |-
+                    SkillPrompt defines a markdown prompt file loaded into the agent's context.
+                    Each prompt is written to .claude/skills/{name}.md in the workspace,
+                    matching the Claude Code skills convention.
+                  properties:
+                    content:
+                      description: content is the markdown instruction content.
+                      minLength: 1
+                      type: string
+                    name:
+                      description: name is the prompt identifier, used as the filename
+                        ({name}.md).
+                      minLength: 1
+                      type: string
+                  required:
+                  - content
+                  - name
+                  type: object
+                type: array
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources: {}
