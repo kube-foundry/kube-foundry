@@ -85,11 +85,14 @@ func main() {
 	flag.StringVar(&metricsCertKey, "metrics-cert-key", "tls.key", "The name of the metrics server key file.")
 	flag.BoolVar(&enableHTTP2, "enable-http2", false,
 		"If set, HTTP/2 will be enabled for the metrics and webhook servers")
-	flag.StringVar(&agentImageClaudeCode, "agent-image-claude-code", "ghcr.io/kube-foundry/kube-foundry/agent-claude-code:latest",
+	flag.StringVar(&agentImageClaudeCode, "agent-image-claude-code",
+		"ghcr.io/kube-foundry/kube-foundry/agent-claude-code:latest",
 		"Container image for the Claude Code agent")
-	flag.StringVar(&agentImageCodex, "agent-image-codex", "ghcr.io/kube-foundry/kube-foundry/agent-codex:latest",
+	flag.StringVar(&agentImageCodex, "agent-image-codex",
+		"ghcr.io/kube-foundry/kube-foundry/agent-codex:latest",
 		"Container image for the Codex agent")
-	flag.StringVar(&agentImageOpenCode, "agent-image-open-code", "ghcr.io/kube-foundry/kube-foundry/agent-open-code:latest",
+	flag.StringVar(&agentImageOpenCode, "agent-image-open-code",
+		"ghcr.io/kube-foundry/kube-foundry/agent-open-code:latest",
 		"Container image for the OpenCode agent")
 	flag.StringVar(&defaultCPU, "default-cpu", "2", "Default CPU limit for sandbox pods")
 	flag.StringVar(&defaultMemory, "default-memory", "4Gi", "Default memory limit for sandbox pods")

@@ -42,7 +42,8 @@ import (
 )
 
 const (
-	pollInterval = 15 * time.Second
+	pollInterval      = 15 * time.Second
+	anthropicAPIKey   = "ANTHROPIC_API_KEY"
 )
 
 // SoftwareTaskReconciler reconciles a SoftwareTask object.
@@ -302,13 +303,13 @@ func (r *SoftwareTaskReconciler) sendCallback(log logr.Logger, task *factoryv1al
 		return
 	}
 
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Post(task.Spec.CallbackURL, "application/json", bytes.NewReader(body))
+	httpClient := &http.Client{Timeout: 10 * time.Second}
+	resp, err := httpClient.Post(task.Spec.CallbackURL, "application/json", bytes.NewReader(body))
 	if err != nil {
 		log.Error(err, "Failed to send callback", "url", task.Spec.CallbackURL)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode >= 300 {
 		log.Info("Callback returned non-success status", "url", task.Spec.CallbackURL, "status", resp.StatusCode)
@@ -341,7 +342,7 @@ func (r *SoftwareTaskReconciler) handleFailed(ctx context.Context, task *factory
 		if err := r.Status().Update(ctx, task); err != nil {
 			return ctrl.Result{}, err
 		}
-		return ctrl.Result{Requeue: true}, nil
+		return ctrl.Result{RequeueAfter: time.Second}, nil
 	}
 
 	return ctrl.Result{}, nil
@@ -475,7 +476,7 @@ func (r *SoftwareTaskReconciler) resolveMCPServers(ctx context.Context, namespac
 
 // collectMCPServers gathers MCP server definitions from all skills.
 func collectMCPServers(skills []factoryv1alpha1.Skill) []factoryv1alpha1.MCPServer {
-	var all []factoryv1alpha1.MCPServer
+	all := make([]factoryv1alpha1.MCPServer, 0)
 	for _, skill := range skills {
 		all = append(all, skill.Spec.MCPServers...)
 	}
@@ -727,7 +728,7 @@ func agentAPIKeyName(agent string) string {
 	case "codex":
 		return "OPENAI_API_KEY"
 	default:
-		return "ANTHROPIC_API_KEY"
+		return anthropicAPIKey
 	}
 }
 

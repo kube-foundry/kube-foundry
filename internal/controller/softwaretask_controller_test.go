@@ -397,7 +397,7 @@ var _ = Describe("SoftwareTask Controller", func() {
 			// Failed -> Pending (retry)
 			result, err := reconcileTask(ctx, taskName)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(result.Requeue).To(BeTrue())
+			Expect(result.RequeueAfter).NotTo(BeZero())
 
 			updatedTask := &factoryv1alpha1.SoftwareTask{}
 			Expect(k8sClient.Get(ctx, types.NamespacedName{Name: taskName, Namespace: namespace}, updatedTask)).To(Succeed())
@@ -466,7 +466,6 @@ var _ = Describe("SoftwareTask Controller", func() {
 			// Failed with maxRetries=0 -> stays Failed
 			result, err := reconcileTask(ctx, taskName)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(result.Requeue).To(BeFalse())
 			Expect(result.RequeueAfter).To(BeZero())
 
 			updatedTask := &factoryv1alpha1.SoftwareTask{}
@@ -496,7 +495,6 @@ var _ = Describe("SoftwareTask Controller", func() {
 			result, err := reconcileTask(ctx, taskName)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(result.RequeueAfter).To(BeZero())
-			Expect(result.Requeue).To(BeFalse())
 		})
 	})
 

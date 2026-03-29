@@ -1,6 +1,6 @@
 # Kube Foundry
 
-A Kubernetes-native platform that accepts software engineering tasks, routes them to AI coding agents running in isolated sandboxes, and delivers completed work as pull requests.
+A Kubernetes-native software factory that accepts software engineering tasks, routes them to AI coding agents running in isolated sandboxes, and delivers completed work as pull requests.
 
 Submit a `SoftwareTask` custom resource and the operator spins up a sandboxed pod running your chosen AI agent (Claude Code, Codex, or OpenCode). The agent clones your repo, completes the task, and opens a PR.
 

@@ -90,7 +90,8 @@ func TestCreateTask_WithDefaults(t *testing.T) {
 
 func TestCreateTask_WithAllFields(t *testing.T) {
 	h := newTestHandler()
-	body := `{"repo":"https://github.com/test/repo","task":"Add feature","branch":"dev","secretRef":"my-secret","agent":"claude-code"}`
+	body := `{"repo":"https://github.com/test/repo","task":"Add feature",` +
+		`"branch":"dev","secretRef":"my-secret","agent":"claude-code"}`
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/tasks", strings.NewReader(body))
 	w := httptest.NewRecorder()
 
