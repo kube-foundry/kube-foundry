@@ -1,0 +1,34 @@
+apiVersion: factory.factory.io/v1alpha1
+kind: Skill
+metadata:
+  name: go-expert
+spec:
+  description: "Go development best practices"
+  files:
+    - path: CLAUDE.md
+      content: |
+        You are an expert Go developer. Follow these conventions:
+        - Use Go 1.25+ idioms
+        - Always run `go vet ./...` before committing
+        - Write table-driven tests
+        - Use structured logging with slog
+        - Handle errors explicitly, never ignore them
+  env:
+    - name: GOFLAGS
+      value: "-count=1"
+  init:
+    - "go mod download"
+---
+apiVersion: factory.factory.io/v1alpha1
+kind: SoftwareTask
+metadata:
+  name: add-unit-tests
+spec:
+  repo: https://github.com/your-org/your-repo
+  branch: main
+  task: "Add unit tests for the auth package, targeting 80% coverage"
+  agent: claude-code
+  credentials:
+    secretRef: factory-creds
+  skills:
+    - go-expert

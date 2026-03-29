@@ -1,0 +1,65 @@
+site_name: Kube Foundry
+site_description: Kubernetes-native AI software engineering factory
+site_url: https://kube-foundry.github.io/kube-foundry
+repo_url: https://github.com/kube-foundry/kube-foundry
+repo_name: kube-foundry/kube-foundry
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+  - Guides:
+      - Skills: guides/skills.md
+      - MCP Servers: guides/mcp-servers.md
+      - Webhook Server: guides/webhook.md
+      - Agents: guides/agents.md
+  - Reference:
+      - SoftwareTask CRD: reference/softwaretask.md
+      - Skill CRD: reference/skill.md
+      - Helm Values: reference/helm-values.md
+  - Development:
+      - Local Setup: development/local-setup.md
+      - Project Structure: development/project-structure.md

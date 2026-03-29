@@ -32,3 +32,6 @@ go.work
 
 # Claude Code local settings
 .claude/
+
+# MkDocs build output
+site/

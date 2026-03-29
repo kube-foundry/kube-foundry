@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
   name: softwaretask-sample
 spec:
-  repo: https://github.com/example/myapp
+  repo: https://github.com/your-org/your-repo
   task: "Add unit tests for the auth package"
   agent: claude-code
   credentials:

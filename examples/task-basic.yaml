@@ -3,7 +3,7 @@ kind: SoftwareTask
 metadata:
   name: add-login-page
 spec:
-  repo: https://github.com/example/my-app
+  repo: https://github.com/your-org/your-repo
   branch: main
   task: "Add a new features section to the homepage"
   agent: claude-code
