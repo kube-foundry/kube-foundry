@@ -1,6 +1,6 @@
 site_name: Kube Foundry
 site_description: Kubernetes-native AI software engineering factory
-site_url: https://kube-foundry.github.io/kube-foundry
+site_url: https://kubefoundry.io
 repo_url: https://github.com/kube-foundry/kube-foundry
 repo_name: kube-foundry/kube-foundry
 
@@ -56,6 +56,9 @@ nav:
       - MCP Servers: guides/mcp-servers.md
       - Webhook Server: guides/webhook.md
       - Agents: guides/agents.md
+      - Running Claude Code on Kubernetes: guides/running-claude-code-on-kubernetes.md
+      - Running Codex on Kubernetes: guides/running-codex-on-kubernetes.md
+      - Running OpenCode on Kubernetes: guides/running-open-code-on-kubernetes.md
   - Reference:
       - SoftwareTask CRD: reference/softwaretask.md
       - Skill CRD: reference/skill.md
