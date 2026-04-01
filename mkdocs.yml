@@ -6,6 +6,7 @@ repo_name: kube-foundry/kube-foundry
 
 theme:
   name: material
+  custom_dir: docs/overrides
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
