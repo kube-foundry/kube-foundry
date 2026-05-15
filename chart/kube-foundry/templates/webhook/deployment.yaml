@@ -20,10 +20,18 @@ spec:
         app.kubernetes.io/component: webhook
     spec:
       serviceAccountName: {{ include "kube-foundry.fullname" . }}-webhook
+      {{- with .Values.webhook.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: webhook
           image: "{{ .Values.webhook.image.repository }}:{{ .Values.webhook.image.tag }}"
           imagePullPolicy: {{ .Values.webhook.image.pullPolicy }}
+          {{- with .Values.webhook.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: NAMESPACE
               value: {{ .Values.namespace }}

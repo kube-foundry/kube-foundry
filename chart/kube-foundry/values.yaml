@@ -12,6 +12,18 @@ operator:
     requests:
       cpu: 100m
       memory: 128Mi
+  # Pod-level securityContext. Defaults satisfy Pod Security Admission "restricted".
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  # Container-level securityContext. Defaults satisfy Pod Security Admission "restricted".
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
 
 # -- Webhook server configuration
 webhook:
@@ -32,6 +44,18 @@ webhook:
     requests:
       cpu: 50m
       memory: 64Mi
+  # Pod-level securityContext. Defaults satisfy Pod Security Admission "restricted".
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  # Container-level securityContext. Defaults satisfy Pod Security Admission "restricted".
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
 
 # -- Agent configuration
 agent:
