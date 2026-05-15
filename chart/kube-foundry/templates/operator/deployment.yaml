@@ -19,10 +19,18 @@ spec:
         app.kubernetes.io/component: operator
     spec:
       serviceAccountName: {{ include "kube-foundry.fullname" . }}-operator
+      {{- with .Values.operator.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: manager
           image: "{{ .Values.operator.image.repository }}:{{ .Values.operator.image.tag }}"
           imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
+          {{- with .Values.operator.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           args:
             - --leader-elect
             - --agent-image-claude-code={{ .Values.agent.claudeCode.image.repository }}:{{ .Values.agent.claudeCode.image.tag }}
